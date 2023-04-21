@@ -15,8 +15,6 @@ func main() {
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	fmt.Println(fs)
-	// mime.AddExtensionType(".js", "application/javascript")
-	// mime.AddExtensionType(".css", "text/css")
 
 	// File handlers for javascript, css.
 	http.HandleFunc("/fonts/style/", cssHandler)
@@ -26,7 +24,13 @@ func main() {
 	http.HandleFunc("/login", loginHandler)
 
 	fmt.Println("Server running at port", SERVERPORT)
-	http.ListenAndServe(SERVERPORT, nil)
+
+	err := http.ListenAndServe(SERVERPORT, nil)
+
+	if err != nil {
+		fmt.Println("Failed to start the server", err)
+	}
+
 }
 
 func cssHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,8 +47,6 @@ func jsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/javascript")
 
 	filename := r.URL.Path[len("/fonts/scripts/"):]
-	fmt.Println(filename)
-
 	http.ServeFile(w, r, "./fonts/scripts/"+filename)
 }
 
@@ -65,7 +67,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		t, _ := template.ParseFiles("./static/login.html")
 		t.Execute(w, nil)
-	} else {
+	}
+
+	if r.Method == "POST" {
 		user.Name = r.FormValue("username")
 		user.Password = r.FormValue("password")
 		user.ValidatePassword()
@@ -74,7 +78,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Your password is", user.Password)
 		}
 
-		t, _ := template.ParseFiles("./static/login.html")
+		t, _ := template.ParseFiles("static/login.html")
 		t.Execute(w, nil)
 	}
 }
