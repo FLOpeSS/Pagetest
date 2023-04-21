@@ -1,3 +1,3 @@
-module pagetest/m/v2
+module pagetest/go
 
 go 1.20
