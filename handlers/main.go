@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"pagetest/go/Users"
+	Users "pagetest/go/users"
 	"text/template"
 )
 
@@ -30,9 +30,8 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("got / request")
 
 	t, err := template.ParseFiles("./static/hello.html")
-
 	if err != nil {
-		fmt.Println("error on the parsing phase")
+		fmt.Println("Error while parsing: ", err)
 	}
 
 	t.Execute(w, nil)
@@ -41,7 +40,10 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method", r.Method)
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles("./static/login.html")
+		t, err := template.ParseFiles("./static/login.html")
+		if err != nil {
+			fmt.Println("Error while parsing: ", err)
+		}
 		t.Execute(w, nil)
 	}
 

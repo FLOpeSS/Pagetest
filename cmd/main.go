@@ -6,7 +6,7 @@ import (
 	"pagetest/go/handlers"
 )
 
-const SERVERPORT string = ":8000"
+const SERVERPORT string = ":3000"
 
 func main() {
 
