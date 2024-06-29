@@ -1,19 +1,27 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	Users "pagetest/go/users"
+	"path"
 	"text/template"
 )
 
 var user Users.User
+
+type StatusJson struct {
+	GolangVersion string `json:"golangVersion"`
+	Working       bool   `json:"working"`
+}
 
 func CssHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Got css request")
 	w.Header().Set("Content-type", "text/css")
 
 	filename := r.URL.Path[len("/fonts/style/"):]
+	filename = path.Clean(filename)
 
 	http.ServeFile(w, r, "./fonts/style/"+filename)
 }
@@ -59,4 +67,42 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		t, _ := template.ParseFiles("static/login.html")
 		t.Execute(w, nil)
 	}
+}
+
+func StatusHandler(w http.ResponseWriter, r *http.Request) {
+
+	statusJson := &StatusJson{
+		GolangVersion: "1.22",
+	}
+
+	if statusJson.GolangVersion == "1.22" {
+		statusJson.Working = true
+	}
+
+	err := json.NewDecoder(r.Body).Decode(statusJson)
+	if err != nil {
+		fmt.Printf("Error decoding json, Error: %v", err)
+	}
+
+	statusDecoded, err := json.Marshal(statusJson)
+	if err != nil {
+		panic(err)
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	w.Write(statusDecoded)
+
+	// w.Header().Set("Content-type", "application/json")
+	// err := json.NewEncoder(w).Encode(&StatusJson{
+	// 	GolangVersion: "1.22",
+	// 	Working:       "yes",
+	// })
+
+	// if err != nil {
+	// 	fmt.Println("Error: ", err)
+	// 	status = 404
+	// }
+	//
+	// w.WriteHeader(status)
+
 }

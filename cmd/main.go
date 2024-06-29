@@ -10,14 +10,14 @@ const SERVERPORT string = ":3000"
 
 func main() {
 
-	fmt.Println("is this working")
-
 	// File handlers for javascript, css.
 	http.HandleFunc("/fonts/scripts/", handlers.JsHandler)
 	http.HandleFunc("/fonts/style/", handlers.CssHandler)
 
 	http.HandleFunc("/", handlers.HomePageHandler)
 	http.HandleFunc("/login", handlers.LoginHandler)
+
+	http.HandleFunc("/api/v1/status", handlers.StatusHandler)
 
 	fmt.Println("Server running at port", SERVERPORT)
 
